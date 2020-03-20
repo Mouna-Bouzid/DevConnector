@@ -1,12 +1,13 @@
 import React, { Fragment, useState } from 'react';
-import {Link} from 'react-router-dom'
-import {connect} from 'react-redux'
-import {setAlert} from '../../actions/alert'
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { setAlert } from '../../actions/alert';
+import { register } from '../../actions/auth';
+
 // import axios from 'axios'
-import PropTypes from 'prop-types'
+import PropTypes from 'prop-types';
 
-
-const Register = ({setAlert}) => {
+const Register = ({ setAlert, register }) => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -18,12 +19,19 @@ const Register = ({setAlert}) => {
 
   const onChange = e =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  const onSubmit= async e =>{
-    e.preventDefault()
-    if(password !== password2){
-      setAlert('passwords do not match', 'danger')
+  const onSubmit = async e => {
+    e.preventDefault();
+    if (password !== password2) {
+      setAlert('passwords do not match', 'danger');
     } else {
-      console.log('SUCCES')
+      await register(formData);
+      setFormData({
+        ...formData,
+        name: '',
+        email: '',
+        password: '',
+        password2: ''
+      });
       // const newUser = {name, email, password}
       // try{
       // const config ={
@@ -35,7 +43,7 @@ const Register = ({setAlert}) => {
       //   console.error(error.response.data)
       // }
     }
-  }
+  };
 
   return (
     <Fragment>
@@ -43,7 +51,11 @@ const Register = ({setAlert}) => {
       <p className='lead'>
         <i className='fas fa-user'></i> Create Your Account
       </p>
-      <form className='form' action='create-profile.html'  onSubmit={(e)=>onSubmit(e)}>
+      <form
+        className='form'
+        action='create-profile.html'
+        onSubmit={e => onSubmit(e)}
+      >
         <div className='form-group'>
           <input
             type='text'
@@ -99,7 +111,8 @@ const Register = ({setAlert}) => {
   );
 };
 
-Register.propTypes={
+Register.propTypes = {
   setAlert: PropTypes.func.isRequired,
-}
-export default connect(null, {setAlert})(Register);
+  register: PropTypes.func.isRequired
+};
+export default connect(null, { setAlert, register })(Register);
